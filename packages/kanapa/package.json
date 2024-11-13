@@ -1,16 +1,16 @@
 {
-  "name": "pkg-a",
-  "version": "0.0.1",
-  "description": "TODO",
-  "homepage": "TODO",
+  "name": "kanapa",
+  "version": "0.0.0",
+  "description": "A syntax highlighting code block component based on shiki for use with React Server Components",
+  "homepage": "https://github.com/hamlim/kanapa",
   "author": {
-    "name": "TODO",
-    "email": "TODO"
+    "name": "Matt Hamlin",
+    "email": "matthewjameshamlin@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "TODO",
-    "directory": "packages/pkg-a"
+    "url": "https://github.com/hamlim/kanapa",
+    "directory": "packages/kanapa"
   },
   "exports": {
     ".": {
@@ -18,13 +18,17 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "peerDependencies": {
+    "shiki": "^1.22.2"
+  },
   "type": "module",
   "devDependencies": {
     "@swc/cli": "0.3.10",
     "@swc/core": "1.4.2",
     "hohoro": "0.3.0",
     "@types/bun": "1.1.11",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "shiki": "1.22.2"
   },
   "scripts": {
     "dev": "node --watch-path=./src dev.mjs",

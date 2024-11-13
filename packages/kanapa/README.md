@@ -1,11 +1,11 @@
-# `pkg-a`
+# `kanapa`
 
-TODO
+A syntax highlighting code block component based on `shiki` for use with React Server Components!
 
 ## Getting Started:
 
 ```bash
-bun add pkg-a
+bun add kanapa
 ```
 
 ...
