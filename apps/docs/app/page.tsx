@@ -75,7 +75,7 @@ export default function Home() {
             <a href="#installation">Get Started</a>
           </Button>
           <Button variant="outline" asChild>
-            <a href="https://github.com/hamlim/hohoro">
+            <a href="https://github.com/hamlim/kanapa">
               <StarIcon className="mr-2 inline-flex" /> Star on GitHub
             </a>
           </Button>
