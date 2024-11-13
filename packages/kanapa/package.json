@@ -1,6 +1,6 @@
 {
   "name": "kanapa",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A syntax highlighting code block component based on shiki for use with React Server Components",
   "homepage": "https://github.com/hamlim/kanapa",
   "author": {
@@ -13,6 +13,8 @@
     "directory": "packages/kanapa"
   },
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "files": ["dist", "src", "CHANGELOG.md", "README.md", "package.json"],
   "exports": {
     ".": {
       "import": "./dist/index.js",
