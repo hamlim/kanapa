@@ -1,6 +1,6 @@
 {
   "name": "kanapa",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A syntax highlighting code block component based on shiki for use with React Server Components",
   "homepage": "https://github.com/hamlim/kanapa",
   "author": {

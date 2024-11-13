@@ -2,9 +2,45 @@ import "server-only";
 import type { ReactElement } from "react";
 import { codeToHtml } from "shiki";
 
-export let config = {
-  themes: { light: "vitesse-light", dark: "vitesse-dark" },
+export type Config = {
+  themes: {
+    light: string;
+    dark: string;
+  };
+  selectors:
+    | "system"
+    | {
+        light: string;
+        dark: string;
+      };
 };
+
+export let config: Config = {
+  themes: { light: "vitesse-light", dark: "vitesse-dark" },
+  selectors: "system",
+};
+
+export function updateConfig(newConfig: Config): void {
+  config = newConfig;
+}
+
+let lightSystemSelector = [
+  "@media (prefers-color-scheme: light) {",
+  ".kanapa-dark:not(.kanapa-override) { display: none; }",
+  "}",
+];
+
+let darkSystemSelector = [
+  "@media (prefers-color-scheme: dark) {",
+  ".kanapa-light:not(.kanapa-override) { display: none; }",
+  "}",
+];
+
+let systemStyleString = [...lightSystemSelector, ...darkSystemSelector]
+  // Combine to a single string
+  .join("")
+  // Remove all whitespace
+  .replace(/\s+/g, "");
 
 export type CodeProps = {
   /**
@@ -21,10 +57,15 @@ export type CodeProps = {
    */
   code?: string;
   /**
-   * The theme to use for the code block
-   * See supported themes for `shiki` at https://github.com/shikijs/shiki/blob/main/docs/themes.md
+   * Preferred theme to use for the code block
+   *
+   * If provided, the fallback themes won't be used!
    */
-  theme?: string;
+  theme?: "light" | "dark";
+  /**
+   * An optional className to add to each wrapping element
+   */
+  className?: string;
 };
 
 export async function Code({
@@ -32,12 +73,28 @@ export async function Code({
   children,
   code,
   theme,
+  className,
 }: CodeProps): Promise<ReactElement> {
   if (!code && !children) {
     throw new Error("One of `code` or `children` props are required!");
   }
 
   let codeToHighlight = (code || children) as string;
+
+  if (theme) {
+    let highlighted = await codeToHtml(codeToHighlight, {
+      lang,
+      theme,
+    });
+
+    return (
+      <div
+        className={`kanapa-${theme} kanapa-override kanapa-wrap${className ? ` ${className}` : ""}`}
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: We've converted the code to HTML
+        dangerouslySetInnerHTML={{ __html: highlighted }}
+      />
+    );
+  }
 
   let pendingHighlights: Array<{
     themeType: string;
@@ -54,18 +111,26 @@ export async function Code({
     });
   }
 
-  let styleString = [
-    "@media (prefers-color-scheme: light) {",
-    ".kanapa-dark { display: none; }",
-    "}",
-    "@media (prefers-color-scheme: dark) {",
-    ".kanapa-light { display: none; }",
-    "}",
-  ]
-    // Combine to a single string
-    .join("")
-    // Remove all whitespace
-    .replace(/\s+/g, "");
+  let styleString: string;
+
+  if (config.selectors === "system") {
+    styleString = systemStyleString;
+  } else if (
+    typeof config.selectors.light === "string" &&
+    typeof config.selectors.dark === "string"
+  ) {
+    styleString = [
+      `:where(${config.selectors.light}) .kanapa-dark:not(.kanapa-override){display:none;}`,
+      `:where(${config.selectors.dark}) .kanapa-light:not(.kanapa-override){display:none;}`,
+    ]
+      // Combine to a single string
+      .join("");
+    // Not safe to remove all whitespaces, since we need to preserve the space between the selectors
+  } else {
+    throw new Error(
+      "Invalid `config.selectors` configuration, must be either 'system' or an object with both light and dark key-value pairs",
+    );
+  }
 
   return (
     <>
@@ -77,9 +142,9 @@ export async function Code({
         {styleString}
       </style>
       {pendingHighlights.map(async ({ themeType, highlighted }) => (
-        <pre
+        <div
           key={themeType}
-          className={`kanapa-${themeType} kanapa-pre`}
+          className={`kanapa-${themeType} kanapa-wrap${className ? ` ${className}` : ""}`}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: We've converted the code to HTML
           dangerouslySetInnerHTML={{ __html: await highlighted }}
         />
@@ -89,8 +154,14 @@ export async function Code({
 }
 
 export type MDXCodeProps = {
-  // A React component that contains the code to highlight
+  /**
+   * A React component that contains the code to highlight
+   */
   children: ReactElement<{ children: string; className: string }>;
+  /**
+   * An optional className to add to the wrapping element
+   */
+  className?: string;
 };
 
 /**
@@ -100,7 +171,7 @@ export type MDXCodeProps = {
  * for transformed MDX code blocks, usually in conjunction
  * with the `rehype-mdx-code-props` rehype plugin.
  *
- * See here for an example:
+ * See here for an example: @TODO
  */
 export async function MDXCode(props: MDXCodeProps): Promise<ReactElement> {
   let code = props?.children?.props?.children;
@@ -112,5 +183,9 @@ export async function MDXCode(props: MDXCodeProps): Promise<ReactElement> {
       break;
     }
   }
-  return <Code lang={lang}>{code}</Code>;
+  return (
+    <Code className={props.className} lang={lang}>
+      {code}
+    </Code>
+  );
 }
