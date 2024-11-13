@@ -1,5 +1,9 @@
 ### Unreleased:
 
+### [0.1.1] - November 13th, 2024
+
+- fix: Add `main` mapping to package.json
+
 ### [0.1.0] - November 13th, 2024
 
 - Refined the API, ready for early adoption
