@@ -1,0 +1,9 @@
+{
+  "name": "@matthamlin/kanapa",
+  "version": "0.0.0",
+  "exports": "./src/index.tsx",
+  "imports": {
+    "server-only": "npm:server-only",
+    "shiki": "npm:shiki"
+  }
+}
