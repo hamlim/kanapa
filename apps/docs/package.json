@@ -15,7 +15,7 @@
     "clsx": "^2.1.1",
     "kanapa": "workspace:*",
     "lucide-react": "^0.456.0",
-    "next": "16.2.3",
+    "next": "16.2.6",
     "shiki": "1.22.2",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
